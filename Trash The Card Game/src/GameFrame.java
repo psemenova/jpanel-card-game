@@ -17,7 +17,7 @@ public class GameFrame extends JFrame {
         startBtn.setBounds((SCREEN_WIDTH / 2) - 50, (SCREEN_HEIGHT / 2) - 25, 100, 50);
 
 
-        this.setTitle("Garbage Card Game");
+        this.setTitle("Trash");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(new BorderLayout());
         this.setResizable(false);
