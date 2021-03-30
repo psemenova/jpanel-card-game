@@ -12,6 +12,7 @@ public class GamePanel extends JPanel implements ActionListener {
     Deck deck;
     boolean user_turn;
     Random rand;
+    boolean king;
 
     JButton deckBtn;
     JButton discardBtn = new JButton();
@@ -33,6 +34,8 @@ public class GamePanel extends JPanel implements ActionListener {
         //determine who goes first
         rand = new Random();
         user_turn = rand.nextInt(2) == 0;
+
+        king = false;
 
         //TODO - temp start with player
         user_turn = true;
@@ -170,26 +173,33 @@ public class GamePanel extends JPanel implements ActionListener {
         }
         if (e.getSource() == currentCard) {
             //excluding jack or queen
-            if (deck.getCurrentCard().getNum() - 1 == 11 || deck.getCurrentCard().getNum() - 1 == 12) {
+            if (deck.getCurrentCard().getNum() == 11 || deck.getCurrentCard().getNum() == 12) {
                 user_turn = false;
             }
             //if king user can click any location that is not taken
             //TODO - work on implementing the KING
-            else if (deck.getCurrentCard().getNum() - 1 == 13){
-                for (int i = 0; i < userCards.length; i++) {
-                    if (e.getSource() == userCards[i] && userCards[i].getText().equals("")){
-                        populateImg(deck.getCurrentCard(), userCards[i]);
-                        populateImg(deck.getUserCard(i), currentCard);
-                        deck.setCurrent("U", i);
-                        break;
-                    }
-                }
+            else if (deck.getCurrentCard().getNum() == 13){
+                king = true;
             //if not the king then the rest of the cards
             } else if (userCards[deck.getCurrentCard().getNum() - 1].getText().equals("")) {
                 int pos = deck.getCurrentCard().getNum() - 1;
                 populateImg(deck.getCurrentCard(), userCards[pos]);
                 populateImg(deck.getUserCard(pos), currentCard);
                 deck.setCurrent("U", pos);
+            } else {
+                user_turn = false;
+            }
+        }
+    }
+
+    private void kingPlay(ActionEvent e) {
+        if (king = true) {
+            for (int i = 0; i < userCards.length; i++) {
+                if (e.getSource() == userCards[i] && userCards[i].getText().equals("")) {
+                    populateImg(deck.getCurrentCard(), userCards[i]);
+                    populateImg(deck.getUserCard(i), currentCard);
+                    deck.setCurrent("U", i);
+                }
             }
         }
     }
@@ -259,6 +269,9 @@ public class GamePanel extends JPanel implements ActionListener {
         if (running) {
             if (user_turn) {
                 playerTurn(e);
+                if (king) {
+                    kingPlay(e);
+                }
             } else {
                 computerTurn(e);
             }
