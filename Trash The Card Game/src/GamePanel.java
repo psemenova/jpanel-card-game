@@ -3,6 +3,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.Random;
 
+import static java.lang.Thread.sleep;
+
 public class GamePanel extends JPanel implements ActionListener {
 
     static final int SCREEN_WIDTH = 500;
@@ -155,13 +157,13 @@ public class GamePanel extends JPanel implements ActionListener {
                 populateImg(deck.getCurrentCard(), currentCard);
             } else if (e.getSource() == discardBtn) {
                 if(
-                        deck.getDiscardCard(deck.getCurrentDisPos()).getNum() != 11 ||
-                                deck.getDiscardCard(deck.getCurrentDisPos()).getNum() != 12
+                        deck.getCurrentDiscard().getNum() != 11 &&
+                                deck.getCurrentDiscard().getNum() != 12
                 ) {
                     if (deck.getCurrentDisPos() > 0) {
                         deck.setCurrentFromDiscard();
                         populateImg(deck.getCurrentCard(), currentCard);
-                        populateImg(deck.getDiscardCard(deck.getCurrentDisPos()), discardBtn);
+                        discardBtn.setText("");
                     } else {
                         deck.setCurrentFromDiscard();
                         populateImg(deck.getCurrentCard(), currentCard);
@@ -221,6 +223,8 @@ public class GamePanel extends JPanel implements ActionListener {
 
     public void computerTurn(ActionEvent e) {
         turnTag.setText("Computer Turn");
+        try {sleep(100);} catch (InterruptedException exception){}
+        
         //TODO - automate computer turn
     }
 
@@ -273,8 +277,25 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void winGame() {
+        boolean userWin = false;
+        boolean compWin = false;
         //TODO - win the game
-        for (int i = 0; i < 10; i++){
+        for (int i = 0; i < userCards.length - 1; i++){
+            if (!userCards[i].getText().equals("") && deck.getUserCard(i).getNum() < deck.getUserCard(i+1).getNum()) {
+                userWin = true;
+            } else {
+                userWin = false;
+            }
+            if (!compCards[i].getText().equals("") && deck.getCompCard(i).getNum() < deck.getCompCard(i+1).getNum()) {
+                compWin = true;
+            } else {
+                compWin = false;
+            }
+        }
+        if (user_turn && userWin) {
+            System.out.println("User WON");
+        } else if (!user_turn && compWin) {
+            System.out.println("Computer WON");
         }
     }
 

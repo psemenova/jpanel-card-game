@@ -78,7 +78,7 @@ public class Deck {
 
     public Deck() {
         currentDeckPos = 0;
-        currentDisPos = -1;
+        currentDisPos = 0;
         discardPile = new Card[32];
         user1 = new Card[10];
         user2 = new Card[10];
@@ -107,8 +107,7 @@ public class Deck {
     }
 
     public void startGame() {
-        discardPile[++currentDisPos] = deck[currentDeckPos];
-        currentDisPos++;
+        discardPile[currentDisPos++] = deck[currentDeckPos];
         deck[currentDeckPos++] = null;
     }
 
@@ -135,8 +134,8 @@ public class Deck {
     }
     public void setCurrentFromDiscard() {
         if (currentDisPos > -1) {
-            current = discardPile[currentDisPos];
-            discardPile[currentDisPos] = null;
+            current = discardPile[currentDisPos - 1];
+            discardPile[currentDisPos--] = null;
         }
     }
 
@@ -163,6 +162,10 @@ public class Deck {
     }
     public int getCurrentDisPos() {
         return currentDisPos;
+    }
+
+    public Card getCurrentDiscard() {
+        return discardPile[currentDisPos - 1];
     }
 
     public void takeFromDiscard() {
