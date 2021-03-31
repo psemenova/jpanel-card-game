@@ -165,6 +165,7 @@ public class GamePanel extends JPanel implements ActionListener {
                     } else {
                         deck.setCurrentFromDiscard();
                         populateImg(deck.getCurrentCard(), currentCard);
+                        deck.takeFromDiscard();
                         discardBtn.setText("");
                     }
                 }

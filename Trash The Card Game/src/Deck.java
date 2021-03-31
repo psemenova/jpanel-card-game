@@ -108,6 +108,7 @@ public class Deck {
 
     public void startGame() {
         discardPile[++currentDisPos] = deck[currentDeckPos];
+        currentDisPos++;
         deck[currentDeckPos++] = null;
     }
 
@@ -130,14 +131,12 @@ public class Deck {
 
     public void setCurrentFromDeck() {
         current = deck[currentDeckPos];
-        deck[currentDeckPos] = null;
-        currentDeckPos++;
+        deck[currentDeckPos++] = null;
     }
     public void setCurrentFromDiscard() {
         if (currentDisPos > -1) {
             current = discardPile[currentDisPos];
             discardPile[currentDisPos] = null;
-            currentDisPos++;
         }
     }
 
@@ -166,6 +165,13 @@ public class Deck {
         return currentDisPos;
     }
 
+    public void takeFromDiscard() {
+        currentDisPos--;
+    }
+    public void takeFromDeck() {
+        currentDeckPos--;
+    }
+
     public Card getCard(int i) {
         return deck[i];
     }
@@ -183,6 +189,17 @@ public class Deck {
                 out += "null\n";
             } else {
                 out += deck[i].toString() + " \n";
+            }
+        }
+        return out;
+    }
+    public String toStringDiscardPile() {
+        String out = "";
+        for(int i = 0; i < discardPile.length; i++) {
+            if (discardPile[i] == null) {
+                out += "null\n";
+            } else {
+                out += discardPile[i].toString() + " \n";
             }
         }
         return out;
