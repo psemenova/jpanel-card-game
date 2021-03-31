@@ -171,6 +171,11 @@ public class Deck {
     }
     public Card getDiscardCard(int i) { return discardPile[i]; }
 
+
+    public void addToDiscardPile(Card c) {
+        discardPile[currentDisPos++] = c;
+    }
+
     public String toString() {
         String out = "";
         for(int i = 0; i < deck.length; i++) {

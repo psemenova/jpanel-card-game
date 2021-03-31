@@ -175,9 +175,9 @@ public class GamePanel extends JPanel implements ActionListener {
             //excluding jack or queen
             if (deck.getCurrentCard().getNum() == 11 || deck.getCurrentCard().getNum() == 12) {
                 user_turn = false;
+                changeTurns();
             }
             //if king user can click any location that is not taken
-            //TODO - work on implementing the KING
             else if (deck.getCurrentCard().getNum() == 13){
                 king = true;
             //if not the king then the rest of the cards
@@ -188,9 +188,23 @@ public class GamePanel extends JPanel implements ActionListener {
                 deck.setCurrent("U", pos);
             } else {
                 user_turn = false;
+                changeTurns();
             }
         }
     }
+
+    public void changeTurns() {
+        if (user_turn) {
+            turnTag.setText("User Turn");
+        } else {
+            turnTag.setText("Computer Turn");
+        }
+        populateImg(deck.getCurrentCard(), discardBtn);
+        deck.addToDiscardPile(deck.getCurrentCard());
+        deck.setCurrent("", 0);
+        currentCard.setText("");
+    }
+
 
     private void kingPlay(ActionEvent e) {
         if (king = true) {
@@ -260,7 +274,6 @@ public class GamePanel extends JPanel implements ActionListener {
     public void winGame() {
         //TODO - win the game
         for (int i = 0; i < 10; i++){
-
         }
     }
 
