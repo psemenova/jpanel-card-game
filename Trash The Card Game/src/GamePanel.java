@@ -171,9 +171,15 @@ public class GamePanel extends JPanel implements ActionListener {
                             deck.getCurrentDiscard().getNum() != 11 &&
                                 deck.getCurrentDiscard().getNum() != 12
                     ) {
-                        deck.setCurrentFromDiscard();
-                        populateImg(deck.getCurrentCard(), currentCard);
-                        discardBtn.setText("");
+                        if (compCards[deck.getCurrentDiscard().getNum()].getText().equals("")) {
+                            deck.setCurrentFromDiscard();
+                            populateImg(deck.getCurrentCard(), currentCard);
+                            if (!deck.discardPileEmpty()) {
+                                populateImg(deck.getDiscardCard(), discardBtn);
+                            } else {
+                                discardBtn.setText("");
+                            }
+                        }
                     }
                 }
 
@@ -201,17 +207,21 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
 
+
+
     public void changeTurns() {
-        populateImg(deck.getCurrentCard(), discardBtn);
-        deck.addToDiscardPile(deck.getCurrentCard());
-        deck.resetCurrent();
-        currentCard.setText("");
-        if (user_turn) {
-            turnTag.setText("User Turn");
-        } else {
-            turnTag.setText("Computer Turn");
-            computerTurn();
-        }
+        try {
+            populateImg(deck.getCurrentCard(), discardBtn);
+            deck.addToDiscardPile(deck.getCurrentCard());
+            deck.resetCurrent();
+            currentCard.setText("");
+            if (user_turn) {
+                turnTag.setText("User Turn");
+            } else {
+                turnTag.setText("Computer Turn");
+                computerTurn();
+            }
+        } catch (Exception e) {}
 
 //        CountDownLatch latch = new CountDownLatch(1);
 //        pause();
@@ -246,6 +256,7 @@ public class GamePanel extends JPanel implements ActionListener {
                     populateImg(deck.getCurrentCard(), userCards[i]);
                     populateImg(deck.getUserCard(i), currentCard);
                     deck.setCurrent("U", i);
+                    king = false;
                 }
             }
         }
@@ -362,30 +373,32 @@ public class GamePanel extends JPanel implements ActionListener {
         boolean compWin = false;
         //TODO - win the game
         int i;
-        for (i = 0; i < userCards.length - 1; i++){
-            if (userCards[i].getText().equals("") || deck.getUserCard(i).getNum() == 13) {
+        for (i = 0; i < userCards.length; i++){
+            if (userCards[i].getText().equals("") /*|| deck.getUserCard(i).getNum() == 13*/) {
                 break;
             }
         }
 
-        if (i == userCards.length - 1) {
+        if (i == userCards.length) {
             userWin = true;
         }
 
-        for (i = 0; i < compCards.length - 1; i++){
+        for (i = 0; i < compCards.length; i++){
             if (compCards[i].getText().equals("") || deck.getCompCard(i).getNum() == 13) {
                 break;
             }
         }
 
-        if (i == compCards.length - 1) {
+        if (i == compCards.length) {
             compWin = true;
         }
 
         if (user_turn && userWin) {
             System.out.println("User WON");
+            running = false;
         } else if (!user_turn && compWin) {
             System.out.println("Computer WON");
+            running = false;
         }
     }
 
