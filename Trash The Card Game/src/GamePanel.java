@@ -279,19 +279,15 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void computerTurn() {
+        //set up computer turn
         if (!user_turn) {
-            //set up computer turn
-
             //if discard pile doesn't contain J or Q
-
-            //TODO - computer king turn
-            //temporary exclusion of king
             if (deck.getCurrentCard() == null) {
                 if (deck.getCurrentDiscard().getNum() != 11 &&
                         deck.getCurrentDiscard().getNum() != 12 &&
                         (deck.getCurrentDiscard().getNum() == 13 ||
-                                userCards[deck.getCurrentDiscard().getNum() - 1].getText().equals("") ||
-                                userCards[deck.getCurrentDiscard().getNum() - 1].getText().contains("K"))
+                                compCards[deck.getCurrentDiscard().getNum() - 1].getText().equals("") ||
+                                compCards[deck.getCurrentDiscard().getNum() - 1].getText().contains("K"))
                 ) {
                     //setting up the current and discard at beginning of turn
                     deck.setCurrentFromDiscard();
@@ -317,8 +313,14 @@ public class GamePanel extends JPanel implements ActionListener {
             }
             //if king user can click any location that is not taken
             else if (deck.getCurrentCard().getNum() == 13){
-                //TODO - King's turn
-                while (true) {
+                boolean spaceForKing = false;
+                for (int i = 0; i < compCards.length ; i++) {
+                    if (compCards[i].getText().equals("")) {
+                        spaceForKing = true;
+                        break;
+                    }
+                }
+                while (spaceForKing) {
                     int randNum = rand.nextInt(10);
                     if (compCards[randNum].getText().equals("")) {
                         populateImg(deck.getCurrentCard(), compCards[randNum]);
@@ -327,8 +329,14 @@ public class GamePanel extends JPanel implements ActionListener {
                         break;
                     }
                 }
+                if (!spaceForKing) {
+                    winGame();
+                    user_turn = true;
+                    changeTurns();
+                }
                 //if not the king then the rest of the cards
-            } else if (compCards[deck.getCurrentCard().getNum() - 1].getText().equals("")) {
+            } else if (compCards[deck.getCurrentCard().getNum() - 1].getText().equals("") ||
+                    compCards[deck.getCurrentCard().getNum() - 1].getText().contains("K")) {
                 int pos = deck.getCurrentCard().getNum() - 1;
                 populateImg(deck.getCurrentCard(), compCards[pos]);
                 populateImg(deck.getCompCard(pos), currentCard);
