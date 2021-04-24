@@ -171,7 +171,10 @@ public class GamePanel extends JPanel implements ActionListener {
                             deck.getCurrentDiscard().getNum() != 11 &&
                                 deck.getCurrentDiscard().getNum() != 12
                     ) {
-                        if (deck.getCurrentDiscard().getNum() == 13 || userCards[deck.getCurrentDiscard().getNum() - 1].getText().equals("")) {
+                        if (deck.getCurrentDiscard().getNum() == 13 ||
+                                userCards[deck.getCurrentDiscard().getNum() - 1].getText().equals("") ||
+                                userCards[deck.getCurrentDiscard().getNum() - 1].getText().contains("K")
+                        ) {
                             deck.setCurrentFromDiscard();
                             populateImg(deck.getCurrentCard(), currentCard);
                             if (!deck.discardPileEmpty()) {
@@ -194,9 +197,23 @@ public class GamePanel extends JPanel implements ActionListener {
             }
             //if king user can click any location that is not taken
             else if (deck.getCurrentCard().getNum() == 13){
-                king = true;
+                int i;
+                for (i = 0; i < userCards.length; i++) {
+                    if (userCards[i].getText().equals("")) {
+                        king = true;
+                        break;
+                    }
+                }
+                if (i == userCards.length && !king) {
+                    winGame();
+                    user_turn = false;
+                    changeTurns();
+                }
+
             //if not the king then the rest of the cards
-            } else if (userCards[deck.getCurrentCard().getNum() - 1].getText().equals("")) {
+            } else if (userCards[deck.getCurrentCard().getNum() - 1].getText().equals("") ||
+                    userCards[deck.getCurrentCard().getNum() - 1].getText().contains("K")
+            ) {
                 int pos = deck.getCurrentCard().getNum() - 1;
                 populateImg(deck.getCurrentCard(), userCards[pos]);
                 populateImg(deck.getUserCard(pos), currentCard);
@@ -263,10 +280,9 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void computerTurn() {
-        System.out.println(Arrays.toString(deck.getCompHand()));
-
-
         if (!user_turn) {
+            //set up computer turn
+
             //if discard pile doesn't contain J or Q
 
             //TODO - computer king turn
@@ -274,7 +290,7 @@ public class GamePanel extends JPanel implements ActionListener {
             if (deck.getCurrentCard() == null) {
                 if (deck.getCurrentDiscard().getNum() != 11 &&
                         deck.getCurrentDiscard().getNum() != 12 &&
-                        deck.getCurrentDiscard().getNum() != 13 &&
+                        deck.getCurrentDiscard().getNum() != 13 && //get rid of later
                         compCards[deck.getCurrentDiscard().getNum() - 1].getText().equals("")
                 ) {
                     //setting up the current and discard at beginning of turn
@@ -291,7 +307,7 @@ public class GamePanel extends JPanel implements ActionListener {
                 }
             }
         }
-        System.out.println("Current Card: " + currentCard.getText());
+
         //while it is still the computer's turn
         while(!user_turn) {
             if (deck.getCurrentCard().getNum() == 11 || deck.getCurrentCard().getNum() == 12) {
@@ -380,7 +396,7 @@ public class GamePanel extends JPanel implements ActionListener {
         //TODO - win the game
         int i;
         for (i = 0; i < userCards.length; i++){
-            if (userCards[i].getText().equals("") /*|| deck.getUserCard(i).getNum() == 13*/) {
+            if (userCards[i].getText().equals("") || deck.getUserCard(i).getNum() == 13) {
                 break;
             }
         }
@@ -417,7 +433,6 @@ public class GamePanel extends JPanel implements ActionListener {
                     kingPlay(e);
                 }
             }
-//            winGame();
         }
     }
 }
