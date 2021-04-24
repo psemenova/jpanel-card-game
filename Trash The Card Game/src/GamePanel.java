@@ -1,8 +1,14 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Random;
+import java.util.*;
+import java.util.Timer;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
+import static java.lang.Thread.currentThread;
 import static java.lang.Thread.sleep;
 
 public class GamePanel extends JPanel implements ActionListener {
@@ -83,7 +89,7 @@ public class GamePanel extends JPanel implements ActionListener {
         deckBtn.addActionListener(this);
 
         //Discard pile button
-        populateImg(deck.getDiscardCard(0), discardBtn);
+        populateImg(deck.getDiscardCard(), discardBtn);
         discardBtn.setBounds(300, 250, 90, 120);
         JLabel lb1 = new JLabel("Discard");
         lb1.setBounds(320, 380, 100,30);
@@ -160,14 +166,14 @@ public class GamePanel extends JPanel implements ActionListener {
                         deck.getCurrentDiscard().getNum() != 11 &&
                                 deck.getCurrentDiscard().getNum() != 12
                 ) {
-                    if (deck.getCurrentDisPos() > 0) {
+                    if (deck.discardPileEmpty()) {
                         deck.setCurrentFromDiscard();
                         populateImg(deck.getCurrentCard(), currentCard);
                         discardBtn.setText("");
                     } else {
                         deck.setCurrentFromDiscard();
                         populateImg(deck.getCurrentCard(), currentCard);
-                        deck.takeFromDiscard();
+//                        deck.takeFromDiscard();
                         discardBtn.setText("");
                     }
                 }
@@ -197,15 +203,40 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void changeTurns() {
+        populateImg(deck.getCurrentCard(), discardBtn);
+        deck.addToDiscardPile(deck.getCurrentCard());
+        deck.resetCurrent();
+        currentCard.setText("");
         if (user_turn) {
             turnTag.setText("User Turn");
         } else {
             turnTag.setText("Computer Turn");
+            computerTurn();
         }
-        populateImg(deck.getCurrentCard(), discardBtn);
-        deck.addToDiscardPile(deck.getCurrentCard());
-        deck.setCurrent("", 0);
-        currentCard.setText("");
+
+//        CountDownLatch latch = new CountDownLatch(1);
+//        pause();
+//        latch.countDown();
+//        computerTurn();
+//        try { latch.await(); } catch (InterruptedException e) { }
+    }
+
+    private void pause(int seconds)  {
+        CountDownLatch latch = new CountDownLatch(seconds);
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask(){
+            int s = seconds;
+            @Override
+            public void run() {
+                System.out.println(s--);
+                latch.countDown();
+                System.out.println("Latch: " + latch.getCount());
+                if (s == 0) {
+                  timer.cancel();
+                }
+            }
+        },0, 1000);
+        try { latch.await(); } catch (InterruptedException e) { }
     }
 
 
@@ -221,20 +252,61 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
 
-    public void computerTurn(ActionEvent e) {
-        turnTag.setText("Computer Turn");
-        try {sleep(100);} catch (InterruptedException exception){}
-        
+    public void computerTurn() {
+        System.out.println(Arrays.toString(deck.getCompHand()));
+        //if discard pile doesn't contain queen or jack
+        //TODO - computer king turn
+        //temporary exclusion of king
+        if (!user_turn) {
+            if (deck.getCurrentDiscard().getNum() != 11 && deck.getCurrentDiscard().getNum() != 12 && deck.getCurrentDiscard().getNum() != 13) {
+                if (compCards[deck.getCurrentDiscard().getNum() - 1].getText().equals("")) {
+                    //setting up the current and discard at beginning of turn
+                    deck.setCurrentFromDiscard();
+                    populateImg(deck.getCurrentCard(), currentCard);
+                    discardBtn.setText("");
+                }
+            } else {
+                //TODO - take from deck instead of discard pile
+                //temp fix
+                user_turn = true;
+                changeTurns();
+            }
+        }
+        //while it is still the computer's turn
+        while(!user_turn) {
+            if (deck.getCurrentCard().getNum() == 11 || deck.getCurrentCard().getNum() == 12) {
+                user_turn = true;
+                changeTurns();
+            }
+            //if king user can click any location that is not taken
+            else if (deck.getCurrentCard().getNum() == 13){
+                //TODO - King's turn
+                user_turn = true;
+                changeTurns();
+                //if not the king then the rest of the cards
+            } else if (compCards[deck.getCurrentCard().getNum() - 1].getText().equals("")) {
+                int pos = deck.getCurrentCard().getNum() - 1;
+                populateImg(deck.getCurrentCard(), compCards[pos]);
+                populateImg(deck.getUserCard(pos), currentCard);
+                deck.setCurrent("C", pos);
+            } else {
+                user_turn = true;
+                changeTurns();
+            }
+        }
+
+
         //TODO - automate computer turn
     }
 
-    public void populateImg(Card card, JButton button) {
+    public boolean populateImg(Card card, JButton button) {
+        CountDownLatch latch = new CountDownLatch(3);
         if (card.getSuit().equals("diamond") || card.getSuit().equals("hearts")){
             button.setForeground(Color.red);
         } else {
             button.setForeground(Color.BLACK);
         }
-
+        latch.countDown();
         switch (card.getNum()) {
             case 1:
                 button.setText("Ace");
@@ -260,7 +332,7 @@ public class GamePanel extends JPanel implements ActionListener {
                 button.setText("K");
                 break;
         }
-
+        latch.countDown();
         if(card.getSuit().equals("diamond")) {
             button.setText(button.getText() + " ♦");
         }
@@ -273,6 +345,9 @@ public class GamePanel extends JPanel implements ActionListener {
         if(card.getSuit().equals("clubs")) {
             button.setText(button.getText() + " ♣");
         }
+        latch.countDown();
+        try { latch.await(); } catch (InterruptedException e) { }
+        return true;
 
     }
 
@@ -280,18 +355,27 @@ public class GamePanel extends JPanel implements ActionListener {
         boolean userWin = false;
         boolean compWin = false;
         //TODO - win the game
-        for (int i = 0; i < userCards.length - 1; i++){
-            if (!userCards[i].getText().equals("") && deck.getUserCard(i).getNum() < deck.getUserCard(i+1).getNum()) {
-                userWin = true;
-            } else {
-                userWin = false;
-            }
-            if (!compCards[i].getText().equals("") && deck.getCompCard(i).getNum() < deck.getCompCard(i+1).getNum()) {
-                compWin = true;
-            } else {
-                compWin = false;
+        int i;
+        for (i = 0; i < userCards.length - 1; i++){
+            if (userCards[i].getText().equals("") || deck.getUserCard(i).getNum() == 13) {
+                break;
             }
         }
+
+        if (i == userCards.length - 1) {
+            userWin = true;
+        }
+
+        for (i = 0; i < compCards.length - 1; i++){
+            if (compCards[i].getText().equals("") || deck.getCompCard(i).getNum() == 13) {
+                break;
+            }
+        }
+
+        if (i == compCards.length - 1) {
+            compWin = true;
+        }
+
         if (user_turn && userWin) {
             System.out.println("User WON");
         } else if (!user_turn && compWin) {
@@ -307,8 +391,6 @@ public class GamePanel extends JPanel implements ActionListener {
                 if (king) {
                     kingPlay(e);
                 }
-            } else {
-                computerTurn(e);
             }
             winGame();
         }

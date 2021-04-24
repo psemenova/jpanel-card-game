@@ -1,5 +1,6 @@
 import java.util.Arrays;
 import java.util.Random;
+import java.util.Stack;
 
 public class Deck {
     private Card[] deck = {
@@ -75,11 +76,13 @@ public class Deck {
     private Card current;
     private int currentDeckPos;
     private int currentDisPos;
+    private Stack<Card> discardPileNew;
 
     public Deck() {
         currentDeckPos = 0;
         currentDisPos = 0;
         discardPile = new Card[32];
+        discardPileNew = new Stack<>();
         user1 = new Card[10];
         user2 = new Card[10];
     }
@@ -107,14 +110,10 @@ public class Deck {
     }
 
     public void startGame() {
-        discardPile[currentDisPos++] = deck[currentDeckPos];
+        discardPileNew.push(deck[currentDeckPos]);
+//        discardPile[currentDisPos++] = deck[currentDeckPos];
         deck[currentDeckPos++] = null;
     }
-
-    public void playerTurn(Card c) {
-
-    }
-
 
     public void setCurrent(String s, int i) {
         if (s.equals("U")) {
@@ -127,16 +126,24 @@ public class Deck {
             user2[i] = temp;
         }
     }
+    public void resetCurrent() {
+        current = null;
+    }
 
     public void setCurrentFromDeck() {
         current = deck[currentDeckPos];
         deck[currentDeckPos++] = null;
     }
     public void setCurrentFromDiscard() {
-        if (currentDisPos > -1) {
-            current = discardPile[currentDisPos - 1];
-            discardPile[currentDisPos--] = null;
+        if (!discardPileNew.isEmpty()) {
+            current = discardPileNew.peek();
+            discardPileNew.pop();
         }
+
+//        if (currentDisPos > -1) {
+//            current = discardPile[currentDisPos - 1];
+//            discardPile[currentDisPos--] = null;
+//        }
     }
 
     public Card getUserCard(int i) {
@@ -165,12 +172,9 @@ public class Deck {
     }
 
     public Card getCurrentDiscard() {
-        return discardPile[currentDisPos - 1];
+        return discardPileNew.peek();
     }
 
-    public void takeFromDiscard() {
-        currentDisPos--;
-    }
     public void takeFromDeck() {
         currentDeckPos--;
     }
@@ -178,11 +182,21 @@ public class Deck {
     public Card getCard(int i) {
         return deck[i];
     }
-    public Card getDiscardCard(int i) { return discardPile[i]; }
+    public Card getDiscardCard() {
+        return discardPileNew.peek();
+    }
 
+    public boolean discardPileEmpty() {
+        return discardPileNew.isEmpty();
+    }
 
     public void addToDiscardPile(Card c) {
+        discardPileNew.push(c);
         discardPile[currentDisPos++] = c;
+    }
+
+    public Card[] getCompHand() {
+        return user2;
     }
 
     public String toString() {
@@ -192,17 +206,6 @@ public class Deck {
                 out += "null\n";
             } else {
                 out += deck[i].toString() + " \n";
-            }
-        }
-        return out;
-    }
-    public String toStringDiscardPile() {
-        String out = "";
-        for(int i = 0; i < discardPile.length; i++) {
-            if (discardPile[i] == null) {
-                out += "null\n";
-            } else {
-                out += discardPile[i].toString() + " \n";
             }
         }
         return out;
