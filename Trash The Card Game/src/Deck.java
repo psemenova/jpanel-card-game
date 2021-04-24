@@ -130,10 +130,16 @@ public class Deck {
     public void setCurrentFromDeck() {
         current = deck[currentDeckPos];
         deck[currentDeckPos++] = null;
+        shuffleDiscardIntoDeck();
     }
 
     public void shuffleDiscardIntoDeck() {
-
+        if (currentDeckPos == deck.length) {
+            currentDeckPos = discardPileNew.size();
+            while (!discardPileNew.isEmpty()) {
+                deck[currentDeckPos++] = discardPileNew.pop();
+            }
+        }
     }
 
     public void setCurrentFromDiscard() {
@@ -160,9 +166,6 @@ public class Deck {
 
     public int getCurrentDeckPos() {
         return currentDeckPos;
-    }
-    public int getCurrentDisPos() {
-        return currentDisPos;
     }
 
     public Card getCurrentDiscard() {

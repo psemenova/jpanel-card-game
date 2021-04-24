@@ -188,6 +188,7 @@ public class GamePanel extends JPanel implements ActionListener {
         if (e.getSource() == currentCard) {
             //excluding jack or queen
             if (deck.getCurrentCard().getNum() == 11 || deck.getCurrentCard().getNum() == 12) {
+                winGame();
                 user_turn = false;
                 changeTurns();
             }
@@ -201,6 +202,7 @@ public class GamePanel extends JPanel implements ActionListener {
                 populateImg(deck.getUserCard(pos), currentCard);
                 deck.setCurrent("U", pos);
             } else {
+                winGame();
                 user_turn = false;
                 changeTurns();
             }
@@ -284,12 +286,8 @@ public class GamePanel extends JPanel implements ActionListener {
                         discardBtn.setText("");
                     }
                 } else {
-                    //TODO - take from deck instead of discard pile
-                    //temp fix
                     deck.setCurrentFromDeck();
                     populateImg(deck.getCurrentCard(), currentCard);
-//                user_turn = true;
-//                turnTag.setText("User Turn");
                 }
             }
         }
@@ -297,12 +295,14 @@ public class GamePanel extends JPanel implements ActionListener {
         //while it is still the computer's turn
         while(!user_turn) {
             if (deck.getCurrentCard().getNum() == 11 || deck.getCurrentCard().getNum() == 12) {
+                winGame();
                 user_turn = true;
                 changeTurns();
             }
             //if king user can click any location that is not taken
             else if (deck.getCurrentCard().getNum() == 13){
                 //TODO - King's turn
+                winGame();
                 user_turn = true;
                 changeTurns();
                 //if not the king then the rest of the cards
@@ -312,6 +312,7 @@ public class GamePanel extends JPanel implements ActionListener {
                 populateImg(deck.getCompCard(pos), currentCard);
                 deck.setCurrent("C", pos);
             } else {
+                winGame();
                 user_turn = true;
                 changeTurns();
             }
@@ -416,7 +417,7 @@ public class GamePanel extends JPanel implements ActionListener {
                     kingPlay(e);
                 }
             }
-            winGame();
+//            winGame();
         }
     }
 }
