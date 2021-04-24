@@ -1,6 +1,9 @@
 import java.util.Arrays;
 
 public class Game {
+    public void m() {
+        new GameFrame();
+    }
     public static void main(String[] args) {
         new GameFrame();
 

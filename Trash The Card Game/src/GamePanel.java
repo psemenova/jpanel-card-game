@@ -444,31 +444,22 @@ public class GamePanel extends JPanel implements ActionListener {
 
     private void winningScreen() {
 
-        pause(3);
+//        pause(3);
 
         compPanel.setVisible(false);
         userPanel.setVisible(false);
         deckPanel.setVisible(false);
-
-        compPanel.invalidate();
-        userPanel.invalidate();
-        deckPanel.invalidate();
+//
+//        compPanel.invalidate();
+//        userPanel.invalidate();
+//        deckPanel.invalidate();
 
         winningPanel = new JPanel();
         winningPanel.setBackground(new Color(0, 0, 0));
         winningPanel.setBounds(0,0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
         JButton startOver = new JButton("Start Over");
         startOver.setBounds((SCREEN_WIDTH / 2) - 50, SCREEN_HEIGHT - 25, 100, 50);
-
-        startOver.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-//                winningPanel.invalidate();
-                currentWindow.dispose();
-                new GameFrame();
-
-            }
-        });
 
         winningPanel.add(startOver);
 
@@ -476,7 +467,17 @@ public class GamePanel extends JPanel implements ActionListener {
         winningPanel.setVisible(true);
         this.setVisible(true);
 
+        startOver.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                starOver();
+            }
+        });
+    }
 
+    private void starOver() {
+        currentWindow.dispose();
+        new GameFrame();
     }
 
 
