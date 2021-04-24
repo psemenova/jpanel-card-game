@@ -157,23 +157,22 @@ public class GamePanel extends JPanel implements ActionListener {
 
     public void playerTurn(ActionEvent e) {
         turnTag.setText("User Turn");
+        //if current starts empty
         if (currentCard.getText().equals("")) {
             if (e.getSource() == deckBtn) {
                 deck.setCurrentFromDeck();
                 populateImg(deck.getCurrentCard(), currentCard);
+                //if user chooses discard pile
             } else if (e.getSource() == discardBtn) {
-                if(
-                        deck.getCurrentDiscard().getNum() != 11 &&
+                //if discard pile isn't empty
+                if(!deck.discardPileEmpty()) {
+                    //if top discard card is not J or Q
+                    if (
+                            deck.getCurrentDiscard().getNum() != 11 &&
                                 deck.getCurrentDiscard().getNum() != 12
-                ) {
-                    if (deck.discardPileEmpty()) {
+                    ) {
                         deck.setCurrentFromDiscard();
                         populateImg(deck.getCurrentCard(), currentCard);
-                        discardBtn.setText("");
-                    } else {
-                        deck.setCurrentFromDiscard();
-                        populateImg(deck.getCurrentCard(), currentCard);
-//                        deck.takeFromDiscard();
                         discardBtn.setText("");
                     }
                 }
@@ -254,22 +253,29 @@ public class GamePanel extends JPanel implements ActionListener {
 
     public void computerTurn() {
         System.out.println(Arrays.toString(deck.getCompHand()));
-        //if discard pile doesn't contain queen or jack
-        //TODO - computer king turn
-        //temporary exclusion of king
+
+
         if (!user_turn) {
+            //if discard pile doesn't contain J or Q
+
+            //TODO - computer king turn
+            //temporary exclusion of king
             if (deck.getCurrentDiscard().getNum() != 11 && deck.getCurrentDiscard().getNum() != 12 && deck.getCurrentDiscard().getNum() != 13) {
                 if (compCards[deck.getCurrentDiscard().getNum() - 1].getText().equals("")) {
                     //setting up the current and discard at beginning of turn
                     deck.setCurrentFromDiscard();
                     populateImg(deck.getCurrentCard(), currentCard);
-                    discardBtn.setText("");
+                    if (!deck.discardPileEmpty()) {
+                        populateImg(deck.getDiscardCard(), discardBtn);
+                    } else {
+                        discardBtn.setText("");
+                    }
                 }
             } else {
                 //TODO - take from deck instead of discard pile
                 //temp fix
                 user_turn = true;
-                changeTurns();
+                turnTag.setText("User Turn");
             }
         }
         //while it is still the computer's turn

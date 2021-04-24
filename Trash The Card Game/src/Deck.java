@@ -70,7 +70,6 @@ public class Deck {
             new Card(13, "clubs")
     };
 
-    private Card[] discardPile;
     private Card[] user1;
     private Card[] user2;
     private Card current;
@@ -81,7 +80,6 @@ public class Deck {
     public Deck() {
         currentDeckPos = 0;
         currentDisPos = 0;
-        discardPile = new Card[32];
         discardPileNew = new Stack<>();
         user1 = new Card[10];
         user2 = new Card[10];
@@ -111,7 +109,6 @@ public class Deck {
 
     public void startGame() {
         discardPileNew.push(deck[currentDeckPos]);
-//        discardPile[currentDisPos++] = deck[currentDeckPos];
         deck[currentDeckPos++] = null;
     }
 
@@ -139,11 +136,6 @@ public class Deck {
             current = discardPileNew.peek();
             discardPileNew.pop();
         }
-
-//        if (currentDisPos > -1) {
-//            current = discardPile[currentDisPos - 1];
-//            discardPile[currentDisPos--] = null;
-//        }
     }
 
     public Card getUserCard(int i) {
@@ -155,9 +147,6 @@ public class Deck {
 
     public Card[] getDeck() {
         return deck;
-    }
-    public Card[] getDiscardPile() {
-        return discardPile;
     }
 
     public Card getCurrentCard() {
@@ -192,7 +181,6 @@ public class Deck {
 
     public void addToDiscardPile(Card c) {
         discardPileNew.push(c);
-        discardPile[currentDisPos++] = c;
     }
 
     public Card[] getCompHand() {
