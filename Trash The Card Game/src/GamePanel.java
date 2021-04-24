@@ -45,9 +45,6 @@ public class GamePanel extends JPanel implements ActionListener {
 
         king = false;
 
-        //TODO - temp start with player
-        user_turn = true;
-
         //initialize the panels
         compPanel = new JPanel(new GridLayout(2,5));
         userPanel = new JPanel(new GridLayout(2,5));
@@ -146,6 +143,8 @@ public class GamePanel extends JPanel implements ActionListener {
         userPanel.setVisible(true);
         compPanel.setVisible(true);
         this.setVisible(true);
+
+        computerTurn();
     }
 
     public void startGame() {
@@ -290,8 +289,9 @@ public class GamePanel extends JPanel implements ActionListener {
             if (deck.getCurrentCard() == null) {
                 if (deck.getCurrentDiscard().getNum() != 11 &&
                         deck.getCurrentDiscard().getNum() != 12 &&
-                        deck.getCurrentDiscard().getNum() != 13 && //get rid of later
-                        compCards[deck.getCurrentDiscard().getNum() - 1].getText().equals("")
+                        (deck.getCurrentDiscard().getNum() == 13 ||
+                                userCards[deck.getCurrentDiscard().getNum() - 1].getText().equals("") ||
+                                userCards[deck.getCurrentDiscard().getNum() - 1].getText().contains("K"))
                 ) {
                     //setting up the current and discard at beginning of turn
                     deck.setCurrentFromDiscard();
@@ -318,9 +318,15 @@ public class GamePanel extends JPanel implements ActionListener {
             //if king user can click any location that is not taken
             else if (deck.getCurrentCard().getNum() == 13){
                 //TODO - King's turn
-                winGame();
-                user_turn = true;
-                changeTurns();
+                while (true) {
+                    int randNum = rand.nextInt(10);
+                    if (compCards[randNum].getText().equals("")) {
+                        populateImg(deck.getCurrentCard(), compCards[randNum]);
+                        populateImg(deck.getCompCard(randNum), currentCard);
+                        deck.setCurrent("C", randNum);
+                        break;
+                    }
+                }
                 //if not the king then the rest of the cards
             } else if (compCards[deck.getCurrentCard().getNum() - 1].getText().equals("")) {
                 int pos = deck.getCurrentCard().getNum() - 1;
