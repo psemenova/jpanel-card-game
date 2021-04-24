@@ -171,7 +171,7 @@ public class GamePanel extends JPanel implements ActionListener {
                             deck.getCurrentDiscard().getNum() != 11 &&
                                 deck.getCurrentDiscard().getNum() != 12
                     ) {
-                        if (deck.getCurrentDiscard().getNum() == 13 || compCards[deck.getCurrentDiscard().getNum()].getText().equals("")) {
+                        if (deck.getCurrentDiscard().getNum() == 13 || userCards[deck.getCurrentDiscard().getNum() - 1].getText().equals("")) {
                             deck.setCurrentFromDiscard();
                             populateImg(deck.getCurrentCard(), currentCard);
                             if (!deck.discardPileEmpty()) {
@@ -210,18 +210,16 @@ public class GamePanel extends JPanel implements ActionListener {
 
 
     public void changeTurns() {
-        try {
-            populateImg(deck.getCurrentCard(), discardBtn);
-            deck.addToDiscardPile(deck.getCurrentCard());
-            deck.resetCurrent();
-            currentCard.setText("");
-            if (user_turn) {
-                turnTag.setText("User Turn");
-            } else {
-                turnTag.setText("Computer Turn");
-                computerTurn();
-            }
-        } catch (Exception e) {}
+        populateImg(deck.getCurrentCard(), discardBtn);
+        deck.addToDiscardPile(deck.getCurrentCard());
+        deck.resetCurrent();
+        currentCard.setText("");
+        if (user_turn) {
+            turnTag.setText("User Turn");
+        } else {
+            turnTag.setText("Computer Turn");
+            computerTurn();
+        }
 
 //        CountDownLatch latch = new CountDownLatch(1);
 //        pause();
@@ -271,8 +269,12 @@ public class GamePanel extends JPanel implements ActionListener {
 
             //TODO - computer king turn
             //temporary exclusion of king
-            if (deck.getCurrentDiscard().getNum() != 11 && deck.getCurrentDiscard().getNum() != 12 && deck.getCurrentDiscard().getNum() != 13) {
-                if (compCards[deck.getCurrentDiscard().getNum() - 1].getText().equals("")) {
+            if (deck.getCurrentCard() == null) {
+                if (deck.getCurrentDiscard().getNum() != 11 &&
+                        deck.getCurrentDiscard().getNum() != 12 &&
+                        deck.getCurrentDiscard().getNum() != 13 &&
+                        compCards[deck.getCurrentDiscard().getNum() - 1].getText().equals("")
+                ) {
                     //setting up the current and discard at beginning of turn
                     deck.setCurrentFromDiscard();
                     populateImg(deck.getCurrentCard(), currentCard);
@@ -281,16 +283,17 @@ public class GamePanel extends JPanel implements ActionListener {
                     } else {
                         discardBtn.setText("");
                     }
-                }
-            } else {
-                //TODO - take from deck instead of discard pile
-                //temp fix
-                deck.setCurrentFromDeck();
-                populateImg(deck.getCurrentCard(), currentCard);
+                } else {
+                    //TODO - take from deck instead of discard pile
+                    //temp fix
+                    deck.setCurrentFromDeck();
+                    populateImg(deck.getCurrentCard(), currentCard);
 //                user_turn = true;
 //                turnTag.setText("User Turn");
+                }
             }
         }
+        System.out.println("Current Card: " + currentCard.getText());
         //while it is still the computer's turn
         while(!user_turn) {
             if (deck.getCurrentCard().getNum() == 11 || deck.getCurrentCard().getNum() == 12) {
@@ -306,7 +309,7 @@ public class GamePanel extends JPanel implements ActionListener {
             } else if (compCards[deck.getCurrentCard().getNum() - 1].getText().equals("")) {
                 int pos = deck.getCurrentCard().getNum() - 1;
                 populateImg(deck.getCurrentCard(), compCards[pos]);
-                populateImg(deck.getUserCard(pos), currentCard);
+                populateImg(deck.getCompCard(pos), currentCard);
                 deck.setCurrent("C", pos);
             } else {
                 user_turn = true;

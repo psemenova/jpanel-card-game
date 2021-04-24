@@ -131,6 +131,11 @@ public class Deck {
         current = deck[currentDeckPos];
         deck[currentDeckPos++] = null;
     }
+
+    public void shuffleDiscardIntoDeck() {
+
+    }
+
     public void setCurrentFromDiscard() {
         if (!discardPileNew.isEmpty()) {
             current = discardPileNew.peek();
