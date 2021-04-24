@@ -29,16 +29,20 @@ public class GamePanel extends JPanel implements ActionListener {
     JPanel compPanel;
     JPanel userPanel;
     JPanel deckPanel;
+    JPanel winningPanel;
 
     JButton[] userCards;
     JButton[] compCards;
 
     JLabel turnTag;
 
+    JFrame currentWindow;
 
 
 
-    GamePanel() {
+    GamePanel(JFrame frame) {
+        currentWindow = frame;
+
         //determine who goes first
         rand = new Random();
         user_turn = rand.nextInt(2) == 0;
@@ -228,22 +232,18 @@ public class GamePanel extends JPanel implements ActionListener {
 
 
     public void changeTurns() {
-        populateImg(deck.getCurrentCard(), discardBtn);
-        deck.addToDiscardPile(deck.getCurrentCard());
-        deck.resetCurrent();
-        currentCard.setText("");
-        if (user_turn) {
-            turnTag.setText("User Turn");
-        } else {
-            turnTag.setText("Computer Turn");
-            computerTurn();
+        if (running) {
+            populateImg(deck.getCurrentCard(), discardBtn);
+            deck.addToDiscardPile(deck.getCurrentCard());
+            deck.resetCurrent();
+            currentCard.setText("");
+            if (user_turn) {
+                turnTag.setText("User Turn");
+            } else {
+                turnTag.setText("Computer Turn");
+                computerTurn();
+            }
         }
-
-//        CountDownLatch latch = new CountDownLatch(1);
-//        pause();
-//        latch.countDown();
-//        computerTurn();
-//        try { latch.await(); } catch (InterruptedException e) { }
     }
 
     private void pause(int seconds)  {
@@ -253,9 +253,8 @@ public class GamePanel extends JPanel implements ActionListener {
             int s = seconds;
             @Override
             public void run() {
-                System.out.println(s--);
+                s--;
                 latch.countDown();
-                System.out.println("Latch: " + latch.getCount());
                 if (s == 0) {
                   timer.cancel();
                 }
@@ -305,16 +304,16 @@ public class GamePanel extends JPanel implements ActionListener {
         }
 
         //while it is still the computer's turn
-        while(!user_turn) {
+        while (!user_turn) {
             if (deck.getCurrentCard().getNum() == 11 || deck.getCurrentCard().getNum() == 12) {
                 winGame();
                 user_turn = true;
                 changeTurns();
             }
             //if king user can click any location that is not taken
-            else if (deck.getCurrentCard().getNum() == 13){
+            else if (deck.getCurrentCard().getNum() == 13) {
                 boolean spaceForKing = false;
-                for (int i = 0; i < compCards.length ; i++) {
+                for (int i = 0; i < compCards.length; i++) {
                     if (compCards[i].getText().equals("")) {
                         spaceForKing = true;
                         break;
@@ -347,9 +346,6 @@ public class GamePanel extends JPanel implements ActionListener {
                 changeTurns();
             }
         }
-
-
-        //TODO - automate computer turn
     }
 
     public boolean populateImg(Card card, JButton button) {
@@ -407,7 +403,6 @@ public class GamePanel extends JPanel implements ActionListener {
     public void winGame() {
         boolean userWin = false;
         boolean compWin = false;
-        //TODO - win the game
         int i;
         for (i = 0; i < userCards.length; i++){
             if (userCards[i].getText().equals("") || deck.getUserCard(i).getNum() == 13) {
@@ -436,7 +431,54 @@ public class GamePanel extends JPanel implements ActionListener {
             System.out.println("Computer WON");
             running = false;
         }
+
+        if (!running) {
+            populateImg(deck.getCurrentCard(), discardBtn);
+            deck.addToDiscardPile(deck.getCurrentCard());
+            deck.resetCurrent();
+            currentCard.setText("");
+
+            winningScreen();
+        }
     }
+
+    private void winningScreen() {
+
+        pause(3);
+
+        compPanel.setVisible(false);
+        userPanel.setVisible(false);
+        deckPanel.setVisible(false);
+
+        compPanel.invalidate();
+        userPanel.invalidate();
+        deckPanel.invalidate();
+
+        winningPanel = new JPanel();
+        winningPanel.setBackground(new Color(0, 0, 0));
+        winningPanel.setBounds(0,0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        JButton startOver = new JButton("Start Over");
+        startOver.setBounds((SCREEN_WIDTH / 2) - 50, SCREEN_HEIGHT - 25, 100, 50);
+
+        startOver.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//                winningPanel.invalidate();
+                currentWindow.dispose();
+                new GameFrame();
+
+            }
+        });
+
+        winningPanel.add(startOver);
+
+        this.add(winningPanel);
+        winningPanel.setVisible(true);
+        this.setVisible(true);
+
+
+    }
+
 
     @Override
     public void actionPerformed(ActionEvent e) {

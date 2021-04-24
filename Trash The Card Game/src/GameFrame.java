@@ -10,6 +10,9 @@ public class GameFrame extends JFrame {
     JButton startBtn;
     JPanel startPanel;
 
+    JButton startOver;
+    JPanel startOverPanel;
+
 
     GameFrame() {
         startPanel = new JPanel();
@@ -18,7 +21,7 @@ public class GameFrame extends JFrame {
 
 
         this.setTitle("Trash");
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setLayout(new BorderLayout());
         this.setResizable(false);
         this.setSize(SCREEN_WIDTH,SCREEN_HEIGHT);
@@ -45,7 +48,8 @@ public class GameFrame extends JFrame {
     }
 
     public void startGame() throws IOException {
-        this.add(new GamePanel());
+        this.add(new GamePanel(this));
     }
+
 
 }
