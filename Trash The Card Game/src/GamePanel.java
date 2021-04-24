@@ -171,7 +171,7 @@ public class GamePanel extends JPanel implements ActionListener {
                             deck.getCurrentDiscard().getNum() != 11 &&
                                 deck.getCurrentDiscard().getNum() != 12
                     ) {
-                        if (compCards[deck.getCurrentDiscard().getNum()].getText().equals("")) {
+                        if (deck.getCurrentDiscard().getNum() == 13 || compCards[deck.getCurrentDiscard().getNum()].getText().equals("")) {
                             deck.setCurrentFromDiscard();
                             populateImg(deck.getCurrentCard(), currentCard);
                             if (!deck.discardPileEmpty()) {
@@ -285,8 +285,10 @@ public class GamePanel extends JPanel implements ActionListener {
             } else {
                 //TODO - take from deck instead of discard pile
                 //temp fix
-                user_turn = true;
-                turnTag.setText("User Turn");
+                deck.setCurrentFromDeck();
+                populateImg(deck.getCurrentCard(), currentCard);
+//                user_turn = true;
+//                turnTag.setText("User Turn");
             }
         }
         //while it is still the computer's turn
