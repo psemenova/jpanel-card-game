@@ -424,12 +424,17 @@ public class GamePanel extends JPanel implements ActionListener {
             compWin = true;
         }
 
+        String tracker = "";
         if (user_turn && userWin) {
+            tracker = "You Won";
             System.out.println("User WON");
             running = false;
         } else if (!user_turn && compWin) {
+            tracker = "You Lost";
             System.out.println("Computer WON");
             running = false;
+        } else {
+            tracker = "";
         }
 
         if (!running) {
@@ -438,11 +443,11 @@ public class GamePanel extends JPanel implements ActionListener {
             deck.resetCurrent();
             currentCard.setText("");
 
-            winningScreen();
+            winningScreen(tracker);
         }
     }
 
-    private void winningScreen() {
+    private void winningScreen(String tracker) {
 
 //        pause(3);
 
@@ -457,11 +462,23 @@ public class GamePanel extends JPanel implements ActionListener {
         winningPanel = new JPanel();
         winningPanel.setBackground(new Color(0, 0, 0));
         winningPanel.setBounds(0,0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        winningPanel.setLayout(new BorderLayout());
 
         JButton startOver = new JButton("Start Over");
-        startOver.setBounds((SCREEN_WIDTH / 2) - 50, SCREEN_HEIGHT - 25, 100, 50);
+        startOver.setBounds((SCREEN_WIDTH / 2) - 50, SCREEN_HEIGHT - 100, 100, 50);
 
-        winningPanel.add(startOver);
+        JLabel winningLabel = new JLabel();
+        if (tracker.equals("You Won")) {
+            winningLabel.setForeground(Color.GREEN);
+        } else {
+            winningLabel.setForeground(Color.RED);
+        }
+        winningLabel.setText(tracker);
+        winningLabel.setFont(new Font("Serif", Font.BOLD, 50));
+//        winningLabel.setBounds(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 300, 200);
+
+        winningPanel.add(winningLabel, BorderLayout.CENTER);
+        winningPanel.add(startOver, BorderLayout.NORTH);
 
         this.add(winningPanel);
         winningPanel.setVisible(true);
